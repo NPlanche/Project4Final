@@ -21,15 +21,16 @@ app = Flask(__name__)
 def index():
     print("GET /")
        
-    r  = request
-    base_url = request.base_url
-    a = request.args
-    f = request.full_path
-    substring = f[0:8]
+    #r  = request
+    #base_url = request.base_url
+    #a = request.args
+    #f = request.full_path
+    #substring = f[0:8]
     
-    url = base_url + f
+    #url = base_url + f
     
-    if (substring == '/?image=') and (len(f) > len(substring)) :
+    #if (substring == '/?image=') and (len(f) > len(substring)) :
+    if (1 == 2) :
         query_def=parse.parse_qs(parse.urlparse(url).query)['image'][0]
         urlBase = 'https://storage.googleapis.com/project2database/static/image/'
         src = urlBase + query_def
@@ -145,7 +146,7 @@ def index():
             image_url = blob.public_url
             urlBase = 'https://storage.googleapis.com/project2database/static/image/'
             image_name = image_url[61:len(image_url)]
-            index_html += "<a href='"+ base_url +"/?image="+ image_name +"'><img class='image' src='" + blob.public_url + "'></a>"
+            #index_html += "<a href='"+ base_url +"/?image="+ image_name +"'><img class='image' src='" + blob.public_url + "'></a>"
 
 
             
