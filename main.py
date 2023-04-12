@@ -140,7 +140,7 @@ def index():
     for blob in blobs:
         if not blob.name.endswith('/'):
             # This blob is not a directory!
-            #index_html += "<img class='image' src='" + blob.public_url + "'>"
+            index_html += "<img class='image' src='" + blob.public_url + "'>"
              #To Do: This goes to a black page (get metadata )
                 
             image_url = blob.public_url
