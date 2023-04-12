@@ -9,6 +9,14 @@ from pathlib import Path
 #request
 import requests
 from urllib import parse
+import urllib.request
+
+
+#Metadata
+from PIL import Image
+from PIL.ExifTags import TAGS
+
+
 
 ##from PIL.ExifTags import TAGS
 ##import sys
@@ -33,18 +41,134 @@ def index():
         query_def=parse.parse_qs(parse.urlparse(url).query)['image'][0]
         urlBase = 'https://storage.googleapis.com/project2database/static/image/'
         src = urlBase + query_def
+        
+        print("query def", query_def)
+        
+        #Getting metadata
+        # Changes start 
+                
+        #Metadata Labes
+        metdata_filename = "trial"
+        metdata_size = "0" 
+        metdata_height = "0"
+        metdata_width = "0"
+        metdata_format = "0"      
+        metdata_mode = "0" 
+        metdata_animated = "0"
+        metdata_frames = "0"
+        
+        
+        #Metadata of Image
+        # path to the image 
+        imagePath = src
+        print("Image Path",imagePath)
+        urllib.request.urlretrieve(
+        imagePath,
+        query_def)
+        # #Read image Data with PIL
+        
+        imageData = Image.open(query_def)
+        
+        #Extract metadata
+        info_dict = {
+                    "Filename": imageData.filename,
+                    "Image Size": imageData.size,
+                    "Image Height": imageData.height,
+                    "Image Width": imageData.width,
+                    "Image Format": imageData.format,
+                    "Image Mode": imageData.mode,
+                    "Image is Animated": getattr(imageData, "is_animated", False),
+                    "Frames in Image": getattr(imageData, "n_frames", 1)
+                }
+        item = 0
+        for label,value in info_dict.items():
+            print(f"{label:25}: {value}")
+            
+            match item:
+                case 0:
+                    metdata_filename = f"{label:25}: {value}"
+                case 1:
+                    metdata_size = f"{label:25}: {value}" 
+                case 2:
+                    metdata_height = f"{label:25}: {value}"
+                case 3:
+                    metdata_width = f"{label:25}: {value}" 
+                case 4:
+                    metdata_format = f"{label:25}: {value}"       
+                case 5:
+                    metdata_mode = f"{label:25}: {value}" 
+                case 6:
+                    metdata_animated = f"{label:25}: {value}" 
+                case 7:
+                    metdata_frames = f"{label:25}: {value}" 
+            item=item+1
+
+        # extract EXIF data
+        exifdata = imageData.getexif()
+        
+        # iterating over all EXIF data fields
+        for tag_id in exifdata:
+            # get the tag name, instead of human unreadable tag id
+            tag = TAGS.get(tag_id, tag_id)
+            data = exifdata.get(tag_id)
+            # decode bytes 
+            if isinstance(data, bytes):
+                data = data.decode()
+                metdata2 = f"{tag:25}: {data}"
+            
+        # Changes end
+        
+        
+        
         index_html =""" <style>
         
-
         .image{
             display: block;
-            width: 300px;
-            height: 300px;
+            width: 400px;
+            height: 365px;
+            padding: 15px;
         }
         
         .container{
             padding:200px 0px;            
         }
+        .styled-table {
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.9em;
+            font-family: sans-serif;
+            min-width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .styled-table thead tr {
+            background-color: #2B3467;
+            color: #ffffff;
+            text-align: left;
+        }
+        
+        .styled-table th,
+        .styled-table td {
+            padding: 12px 15px;
+        }
+        
+        .styled-table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .styled-table tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        .styled-table tbody tr:last-of-type {
+            border-bottom: 2px solid #2B3467;
+        }
+        
+        .styled-table tbody tr.active-row {
+            font-weight: bold;
+            color: #009879;
+        }
+        
         
         </style>
         <div class = "container">
@@ -53,7 +177,13 @@ def index():
                     <td>
 
                     <img class='image' src='"""
-        index_html+= src + "'></td> <tr></div> """       
+        index_html+= src + "'></td> <td><table class='styled-table'><thead><tr><th>Metadata</th></tr></thead><tbody><tr><td>"+metdata_filename+"</td></tr><tr><td>"+metdata_size+"</td></tr><tr><td>"+metdata_height+"</td></tr><tr><td>"+metdata_width+"</td></tr><tr><td>"+metdata_format+"</td></tr><tr><td>"+metdata_mode+"</td></tr><tr><td>"+metdata_animated+"</td></tr><tr><td>"+metdata_frames+"</td></tr></tbody></table></td></tr></table></div>"""
+
+        
+        
+        
+        
+             
        
         return index_html
     else:
