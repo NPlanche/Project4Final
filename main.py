@@ -29,11 +29,11 @@ def index():
     
     url = base_url + f
     
-    #if (substring == '/?image=') and (len(f) > len(substring)) :
-    if (1 == 2) :
-        query_def=parse.parse_qs(parse.urlparse(url).query)['image'][0]
-        urlBase = 'https://storage.googleapis.com/project2database/static/image/'
-        src = urlBase + query_def
+    if (substring == '/?image=') and (len(f) > len(substring)) :
+    #if (1 == 2) :
+        # query_def=parse.parse_qs(parse.urlparse(url).query)['image'][0]
+        # urlBase = 'https://storage.googleapis.com/project2database/static/image/'
+        # src = urlBase + query_def
         index_html =""" <style>
         
 
@@ -54,7 +54,7 @@ def index():
                     <td>
 
                     <img class='image' src='"""
-        index_html+= src + "'></td> <tr></div> """       
+        #index_html+= src + "'></td> <tr></div> """       
        
         return index_html
     else:
