@@ -84,24 +84,24 @@ def index():
         for label,value in info_dict.items():
             print(f"{label:25}: {value}")
             
-            match item:
-                case 0:
-                    metdata_filename = f"{label:25}: {value}"
-                case 1:
-                    metdata_size = f"{label:25}: {value}" 
-                case 2:
-                    metdata_height = f"{label:25}: {value}"
-                case 3:
-                    metdata_width = f"{label:25}: {value}" 
-                case 4:
-                    metdata_format = f"{label:25}: {value}"       
-                case 5:
-                    metdata_mode = f"{label:25}: {value}" 
-                case 6:
-                    metdata_animated = f"{label:25}: {value}" 
-                case 7:
-                    metdata_frames = f"{label:25}: {value}" 
+            if item == 0:
+                metdata_filename = f"{label:25}: {value}"
+            elif item == 1:
+                metdata_size = f"{label:25}: {value}" 
+            elif item == 2:
+                metdata_height = f"{label:25}: {value}"
+            elif item == 3:
+                metdata_width = f"{label:25}: {value}" 
+            elif item == 4:
+                metdata_format = f"{label:25}: {value}"       
+            elif item == 5:
+                metdata_mode = f"{label:25}: {value}" 
+            elif item == 6:
+                metdata_animated = f"{label:25}: {value}" 
+            else:
+                metdata_frames = f"{label:25}: {value}" 
             item=item+1
+
 
         # extract EXIF data
         exifdata = imageData.getexif()
