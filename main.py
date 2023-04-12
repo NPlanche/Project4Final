@@ -118,7 +118,7 @@ def index():
             image_url = blob.public_url
             urlBase = 'https://storage.googleapis.com/project2database/static/image/'
             image_name = image_url[61:len(image_url)]
-            #index_html += "<a href='"+ base_url +"/?image="+ image_name +"'><img class='image' src='" + blob.public_url + "'></a>"
+            index_html += "<a href='"+ base_url +"/?image="+ image_name +"'><img class='image' src='" + blob.public_url + "'></a>"
 
 
             
