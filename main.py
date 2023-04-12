@@ -10,24 +10,17 @@ from pathlib import Path
 import requests
 from urllib import parse
 
-
-
 ##from PIL.ExifTags import TAGS
 ##import sys
-
-
 
 app = Flask(__name__)
 
 
 
-
 @app.route('/')
-
 def index():
-    
     print("GET /")
-   
+       
     r  = request
     base_url = request.base_url
     a = request.args
@@ -65,7 +58,7 @@ def index():
         return index_html
     else:
         print("html principal")
-    
+
         index_html="""<style>
         
 
@@ -86,7 +79,7 @@ def index():
         button{
             background-color: lightgray;
         }
-    
+
         </style>
         <form method="post" enctype="multipart/form-data" action="/upload" method="post">
             <div>
@@ -102,30 +95,62 @@ def index():
         
         
     </form>"""
-
-        # for file in list_files():
-        #     index_html += "<img class='image' src=\" /static/image/"+ file + "\">"
         
-        storage_client = storage.Client('Project 2')
-        #get the bucket
-        bucket = storage_client.get_bucket(app.config['BUCKET'])
+        
+        
+        
+    #old index html
+    hola="""<style>
+    
+    form{
+        font-family: "Raleway", Arial, sans-serif
+    }
+    
+    .image{
+        margin:5px;
+        border: 1px solid #ccc;
+        width: 225px;
+        height: 225px;
+    }
+  
+    </style>
+    <form method="post" enctype="multipart/form-data" action="/upload" method="post">
+        <div>
+            <label for="file">Choose file to upload</label>
+            <input type="file" id="file" name="form_file" accept="image/jpeg"/>
+        </div>
+        <div>
+            <button>Submit</button>
+        </div>
+        <hr>
+        <h1 class='title'>Gallery</h1>
+      
+      
+</form>"""
 
-        blobs = bucket.list_blobs(prefix='static/image/')
-        for blob in blobs:
-            if not blob.name.endswith('/'):
-                # This blob is not a directory!
-                #To Do: This goes to a black page (get metadata )
-                
-                image_url = blob.public_url
-                urlBase = 'https://storage.googleapis.com/project2database/static/image/'
-                image_name = image_url[61:len(image_url)]
-                index_html += "<a href='"+ base_url +"/?image="+ image_name +"'><img class='image' src='" + blob.public_url + "'></a>"
+    # for file in list_files():
+    #     index_html += "<img class='image' src=\" /static/image/"+ file + "\">"
+    
+    storage_client = storage.Client('Project 2')
+    #get the bucket
+    bucket = storage_client.get_bucket(app.config['BUCKET'])
 
+    blobs = bucket.list_blobs(prefix='static/image/')
+    for blob in blobs:
+        if not blob.name.endswith('/'):
+            # This blob is not a directory!
+            #index_html += "<img class='image' src='" + blob.public_url + "'>"
+             #To Do: This goes to a black page (get metadata )
                 
-                
-                
+            image_url = blob.public_url
+            urlBase = 'https://storage.googleapis.com/project2database/static/image/'
+            image_name = image_url[61:len(image_url)]
+            index_html += "<a href='"+ base_url +"/?image="+ image_name +"'><img class='image' src='" + blob.public_url + "'></a>"
+
+
             
-        return index_html
+        
+    return index_html
 
 
 @app.route('/upload', methods = ['POST'])
