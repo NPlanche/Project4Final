@@ -21,13 +21,13 @@ app = Flask(__name__)
 def index():
     print("GET /")
        
-    #r  = request
-    #base_url = request.base_url
-    #a = request.args
-    #f = request.full_path
-    #substring = f[0:8]
+    r  = request
+    base_url = request.base_url
+    a = request.args
+    f = request.full_path
+    substring = f[0:8]
     
-    #url = base_url + f
+    url = base_url + f
     
     #if (substring == '/?image=') and (len(f) > len(substring)) :
     if (1 == 2) :
