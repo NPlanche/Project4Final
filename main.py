@@ -99,34 +99,7 @@ def index():
         
         
         
-    #old index html
-    hola="""<style>
-    
-    form{
-        font-family: "Raleway", Arial, sans-serif
-    }
-    
-    .image{
-        margin:5px;
-        border: 1px solid #ccc;
-        width: 225px;
-        height: 225px;
-    }
-  
-    </style>
-    <form method="post" enctype="multipart/form-data" action="/upload" method="post">
-        <div>
-            <label for="file">Choose file to upload</label>
-            <input type="file" id="file" name="form_file" accept="image/jpeg"/>
-        </div>
-        <div>
-            <button>Submit</button>
-        </div>
-        <hr>
-        <h1 class='title'>Gallery</h1>
-      
-      
-</form>"""
+
 
     # for file in list_files():
     #     index_html += "<img class='image' src=\" /static/image/"+ file + "\">"
@@ -142,7 +115,7 @@ def index():
             index_html += "<img class='image' src='" + blob.public_url + "'>"
              #To Do: This goes to a black page (get metadata )
                 
-            # image_url = blob.public_url
+            image_url = blob.public_url
             # urlBase = 'https://storage.googleapis.com/project2database/static/image/'
             # image_name = image_url[61:len(image_url)]
             #index_html += "<a href='"+ base_url +"/?image="+ image_name +"'><img class='image' src='" + blob.public_url + "'></a>"
