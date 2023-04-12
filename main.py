@@ -53,7 +53,7 @@ def index():
                     <td>
 
                     <img class='image' src='"""
-        #index_html+= src + "'></td> <tr></div> """       
+        index_html+= src + "'></td> <tr></div> """       
        
         return index_html
     else:
