@@ -251,7 +251,7 @@ def index():
              #To Do: This goes to a black page (get metadata )
                 
             image_url = blob.public_url
-            Blob_metadata = blob.get_blob('bird.jpg').size
+            Blob_metadata = blob.size
             
             print("Metadata", Blob_metadata)
             
