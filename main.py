@@ -61,62 +61,67 @@ def index():
         #Metadata of Image
         # path to the image 
         imagePath = src
-        print("Image Path",imagePath)
+        #print("Image Path",imagePath)
         urllib.request.urlretrieve(
         imagePath,
         query_def)
         # #Read image Data with PIL
         
-        imageData = Image.open(query_def)
+        # imageData = Image.open(query_def)
         
-        #Extract metadata
-        info_dict = {
-                    "Filename": imageData.filename,
-                    "Image Size": imageData.size,
-                    "Image Height": imageData.height,
-                    "Image Width": imageData.width,
-                    "Image Format": imageData.format,
-                    "Image Mode": imageData.mode,
-                    "Image is Animated": getattr(imageData, "is_animated", False),
-                    "Frames in Image": getattr(imageData, "n_frames", 1)
-                }
-        item = 0
-        for label,value in info_dict.items():
-            print(f"{label:25}: {value}")
+        # #Extract metadata
+        # info_dict = {
+        #             "Filename": imageData.filename,
+        #             "Image Size": imageData.size,
+        #             "Image Height": imageData.height,
+        #             "Image Width": imageData.width,
+        #             "Image Format": imageData.format,
+        #             "Image Mode": imageData.mode,
+        #             "Image is Animated": getattr(imageData, "is_animated", False),
+        #             "Frames in Image": getattr(imageData, "n_frames", 1)
+        #         }
+        # item = 0
+        # for label,value in info_dict.items():
+        #     #print(f"{label:25}: {value}")
             
-            if item == 0:
-                metdata_filename = f"{label:25}: {value}"
-            elif item == 1:
-                metdata_size = f"{label:25}: {value}" 
-            elif item == 2:
-                metdata_height = f"{label:25}: {value}"
-            elif item == 3:
-                metdata_width = f"{label:25}: {value}" 
-            elif item == 4:
-                metdata_format = f"{label:25}: {value}"       
-            elif item == 5:
-                metdata_mode = f"{label:25}: {value}" 
-            elif item == 6:
-                metdata_animated = f"{label:25}: {value}" 
-            else:
-                metdata_frames = f"{label:25}: {value}" 
-            item=item+1
+        #     if item == 0:
+        #         metdata_filename = f"{label:25}: {value}"
+        #     elif item == 1:
+        #         metdata_size = f"{label:25}: {value}" 
+        #     elif item == 2:
+        #         metdata_height = f"{label:25}: {value}"
+        #     elif item == 3:
+        #         metdata_width = f"{label:25}: {value}" 
+        #     elif item == 4:
+        #         metdata_format = f"{label:25}: {value}"       
+        #     elif item == 5:
+        #         metdata_mode = f"{label:25}: {value}" 
+        #     elif item == 6:
+        #         metdata_animated = f"{label:25}: {value}" 
+        #     else:
+        #         metdata_frames = f"{label:25}: {value}" 
+        #     item=item+1
 
 
-        # extract EXIF data
-        exifdata = imageData.getexif()
+        # # extract EXIF data
+        # exifdata = imageData.getexif()
         
-        # iterating over all EXIF data fields
-        for tag_id in exifdata:
-            # get the tag name, instead of human unreadable tag id
-            tag = TAGS.get(tag_id, tag_id)
-            data = exifdata.get(tag_id)
-            # decode bytes 
-            if isinstance(data, bytes):
-                data = data.decode()
-                metdata2 = f"{tag:25}: {data}"
+        # # iterating over all EXIF data fields
+        # for tag_id in exifdata:
+        #     # get the tag name, instead of human unreadable tag id
+        #     tag = TAGS.get(tag_id, tag_id)
+        #     data = exifdata.get(tag_id)
+        #     # decode bytes 
+        #     if isinstance(data, bytes):
+        #         data = data.decode()
+        #         metdata2 = f"{tag:25}: {data}"
             
-        # Changes end
+        # # Changes end
+        
+        
+        
+        
+        
         
         
         
@@ -246,9 +251,13 @@ def index():
              #To Do: This goes to a black page (get metadata )
                 
             image_url = blob.public_url
+            Blob_metadata = blob.get_blob('bird.jpg').size
+            
+            print("Metadata", Blob_metadata)
+            
             urlBase = 'https://storage.googleapis.com/project2database/static/image/'
             image_name = image_url[61:len(image_url)]
-            index_html += "<a href='"+ base_url +"/?image="+ image_name +"'><img class='image' src='" + blob.public_url + "'></a>"
+            index_html += "<a href='"+ base_url +"/?image="+ image_name +"&path="+blob.name+"'><img class='image' src='" + blob.public_url + "'></a>"
 
 
             
