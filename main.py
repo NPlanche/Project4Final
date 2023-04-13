@@ -15,6 +15,13 @@ from urllib import parse
 #Encode and Decode
 import base64
 
+#Log In 
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+from os import path
+from flask_login import LoginManager
+
 ##from PIL.ExifTags import TAGS
 ##import sys
 
