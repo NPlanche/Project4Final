@@ -1,10 +1,12 @@
 import os
 import traceback
+import pyrebase
 from flask import Flask, redirect, request, send_file
 
 #from PIL import Image
 from google.cloud import storage
 from pathlib import Path
+
 
 #request
 import requests
@@ -278,11 +280,11 @@ def upload():
         save_picture(file.filename)
         download_picture()
         print("///////////////////////////////////Download was a Success////////////////////////////")
-    ##except:
-        ##traceback.print_exc()
+    except:
+        traceback.print_exc()
         #change later
-    except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
+    # except Exception as err:
+    #     print(f"Unexpected {err=}, {type(err)=}")
     return redirect('/')
 
 
