@@ -10,6 +10,9 @@ from pathlib import Path
 import requests
 from urllib import parse
 
+#Encode and Decode
+import base64
+
 ##from PIL.ExifTags import TAGS
 ##import sys
 
@@ -33,6 +36,19 @@ def index():
         query_def=parse.parse_qs(parse.urlparse(url).query)['image'][0]
         urlBase = 'https://storage.googleapis.com/project2database/static/image/'
         src = urlBase + query_def
+        
+        
+        base64_bytes = query_def.encode("ascii")
+            
+        sample_string_bytes = base64.b64decode(base64_bytes)
+        sample_string = sample_string_bytes.decode("ascii")
+            
+        print(f"Decoded Name: {sample_string}")
+        
+        src = urlBase + sample_string
+        print(f"URL: {src}")
+
+        
         index_html =""" <style>
         
 
@@ -118,7 +134,20 @@ def index():
             image_url = blob.public_url
             urlBase = 'https://storage.googleapis.com/project2database/static/image/'
             image_name = image_url[61:len(image_url)]
-            index_html += "<a href='"+ base_url +"/?image="+ image_name +"'><img class='image' src='" + blob.public_url + "'></a>"
+            
+            #Encoding 
+            #sample_string = "GeeksForGeeks is the best"
+            name_bytes = image_name.encode("ascii")
+            
+            base64_bytes = base64.b64encode(name_bytes)
+            base64_name = base64_bytes.decode("ascii")
+            
+            print(f"Encoded string: {base64_name}")
+            
+
+            
+            
+            index_html += "<a href='"+ base_url +"/?image="+ base64_name +"'><img class='image' src='" + blob.public_url + "'></a>"
 
 
             
