@@ -1,6 +1,5 @@
 import os
 import traceback
-import pyrebase
 from flask import Flask, redirect, request, send_file
 
 #from PIL import Image
