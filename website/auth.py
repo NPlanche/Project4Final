@@ -1,5 +1,9 @@
 #Store all the views 
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for
+from .models import User
+from werkzeug.security import generate_password_hash, check_password_hash
+from . import db   ##means from __init__.py import db
+from flask_login import login_user, login_required, logout_user, current_user
 
 #Blueprint of our application
 #all urls 
@@ -7,10 +11,29 @@ auth = Blueprint('auth',__name__)
 
 @auth.route('/login', methods = ['GET','POST'])
 def login():
-    data = request.form
-    print(data)
-    return render_template('login.html', b=True)
+        if request.method == 'POST':
+            email = request.form.get('email')
+            password = request.form.get('password')
+            #filter the user by their email 
+            user = User.query.filter_by(email=email).first()
+            if user:
+                # compare passwords ie. if the hashes are the same
+                if check_password_hash(user.password, password):
+                    #success message
+                    flash('Logged in successfully!', category='success')
+                    login_user(user, remember=True)
+                    #rediret to home
+                    return redirect(url_for('views.home'))
+                else:
+                    #message error 
+                    flash('Incorrect password, try again.', category='error')
+            else:
+                #error the email does not exists
+                flash('Email does not exist.', category='error')
 
+        return render_template("login.html", user=current_user)
+    
+    
 @auth.route('/logout')
 def logout():
     return "<p>Logout</p>"
@@ -25,7 +48,12 @@ def signup():
         password2 = request.form.get('password2')
         
         #Check if the information is Valid
-        if len(email) < 4:
+        #Search for the given email in the database (only one email per user)
+        user = User.query.filter_by(email=email).first()
+        #if the email does exist send them an error
+        if user:
+            flash('Email already exists.', category='error')
+        elif len(email) < 4:
             #send the user an message
             flash('Email must be more that 4 characters', category='error')
         elif len(first_name) < 2:
@@ -42,8 +70,19 @@ def signup():
        
         else:
             #add user to the database
-            flash('Account Created', category='success')
-    
+            #get all the information for the new user 
+            new_user = User(email=email, first_name=first_name, password=generate_password_hash(
+                password1, method='sha256'))
+            #add a new user to the database
+            db.session.add(new_user)
+            #send to the database
+            db.session.commit()
+            login_user(new_user, remember=True)
+            #message
+            flash('Account created!', category='success')
+            #redirect the user to the home page
+            return redirect(url_for('views.home'))
+                            
     return render_template('signup.html')
 
 
