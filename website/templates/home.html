@@ -1,12 +1,32 @@
 <!--   
      Home Template 
     - expends from the base 
+    - change to image gallery later
 -->
 
-
-{% extends 'base.html' %}
-
-{% block title %}Home{% endblock %}
-{% block content %}
-    <h1>This is the Home page</h1>
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%}
+<h1 align="center">Notes</h1>
+<ul class="list-group list-group-flush" id="notes">
+  <!--Loop tru all the notes-->
+  {% for note in user.notes %}
+  <li class="list-group-item">
+    {{ note.data }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+      onClick="deleteNote({{ note.id }})"
+    ></button>
+  </li>
+  {% endfor %}
+</ul>
+<form method="POST">
+  <textarea name="note" id="note" class="form-control"></textarea>
+  <br />
+  <div align="center">
+    <button type="submit" class="btn btn-primary">Add Note</button>
+  </div>
+</form>
 {% endblock %}

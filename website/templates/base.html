@@ -50,13 +50,15 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <!--Links-->
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <!--Only show specific links is a user is autenticated-->
+            {% if user.is_authenticated %}
             <!--Home-->
             <li class="nav-item">
               <a
                 class="nav-link active"
                 aria-current="page"
                 id="home"
-                href="/home"
+                href="/"
               >
                 Home
               </a>
@@ -66,6 +68,7 @@
             <li class="nav-item">
               <a class="nav-link" id="logout" href="/logout">Logout</a>
             </li>
+          {% else %}
 
             <!--Login-->
             <li class="nav-item">
@@ -76,6 +79,9 @@
             <li class="nav-item">
               <a class="nav-link" id="signup" href="/signup">Sign Up</a>
             </li>
+            {% endif %}
+
+
           </ul>
         </div>
       </div>

@@ -21,6 +21,7 @@ def login():
                 if check_password_hash(user.password, password):
                     #success message
                     flash('Logged in successfully!', category='success')
+                    #remembers that this user is logged in
                     login_user(user, remember=True)
                     #rediret to home
                     return redirect(url_for('views.home'))
@@ -35,8 +36,11 @@ def login():
     
     
 @auth.route('/logout')
+#cannot access this unless you are looged in
+@login_required
 def logout():
-    return "<p>Logout</p>"
+    logout_user()
+    return redirect(url_for('auth.login'))
 
 @auth.route('/signup', methods = ['GET','POST'])
 def signup():
@@ -77,13 +81,14 @@ def signup():
             db.session.add(new_user)
             #send to the database
             db.session.commit()
+            #remembers the user that is logged in
             login_user(new_user, remember=True)
             #message
             flash('Account created!', category='success')
             #redirect the user to the home page
             return redirect(url_for('views.home'))
                             
-    return render_template('signup.html')
+    return render_template('signup.html', user=current_user)
 
 
 
