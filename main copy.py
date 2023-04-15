@@ -6,7 +6,6 @@ from flask import Flask, redirect, request, send_file
 from google.cloud import storage
 from pathlib import Path
 
-
 #request
 import requests
 from urllib import parse
@@ -14,17 +13,20 @@ from urllib import parse
 #Encode and Decode
 import base64
 
-#Log In 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+#SQL server
 
-from os import path
-from flask_login import LoginManager
+
 
 ##from PIL.ExifTags import TAGS
 ##import sys
 
 app = Flask(__name__)
+
+app.config['BUCKET'] = 'project2database'
+app.config['UPLOAD_FOLDER'] = './static/image/'
+
+##app = create_app()
+
 
 
 
@@ -152,15 +154,7 @@ def index():
 
                     <img class='image' src='"""
         index_html+= src + "'></td> <td><table class='styled-table'> <caption><h2>Metadata</h2></caption> <thead><tr><th>Category</th><th>Data</th></tr></thead><tbody><tr><td>Filename</td><td>"+name_string+"</td></tr><tr><td>Type</td><td>"+type_string+"</td></tr><tr><td>Size</td><td>"+size_string+"</td></tr><tr><td>Location</td><td>"+location_string+"</td></tr></tbody></table></td></tr></table></div>"""
-        
-        
-        
-        
-        
-        
-        
-             
-       
+    
         return index_html
     else:
         print("html principal")
@@ -263,14 +257,7 @@ def index():
             
             print(f"Encoded Type: {base64_type}")
             
-            
-            
-            
-            
-            index_html += "<a href='"+ base_url +"/?image="+ base64_name +"&size="+base64_size+"&location="+base64_location+"&type="+base64_type+"'><img class='image' src='" + blob.public_url + "'></a>"
-
-
-            
+            index_html += "<a href='"+ base_url +"/?image="+ base64_name +"&size="+base64_size+"&location="+base64_location+"&type="+base64_type+"'><img class='image' src='" + blob.public_url + "'></a>" 
         
     return index_html
 
@@ -314,14 +301,15 @@ def get_file(filename):
     return send_file('./static/image/'+filename)
 
 
-app.config['BUCKET'] = 'project2database'
-app.config['UPLOAD_FOLDER'] = './static/image/'
+
 
 def save_picture(picture_fn):
     picture_path = os.path.join(app.config['UPLOAD_FOLDER'], picture_fn)
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(app.config['BUCKET'])
     blob = bucket.blob('static/image/'+ picture_fn)
+    blob = bucket.blob('static/image/123@gmail.com'+ picture_fn)
+
     blob.upload_from_filename(picture_path)
 
     return picture_path
