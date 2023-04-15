@@ -21,7 +21,7 @@ from os import path
 from flask_login import LoginManager
 
 #sql server
-import pyodbc 
+import pymssql 
 
 ##from PIL.ExifTags import TAGS
 ##import sys
