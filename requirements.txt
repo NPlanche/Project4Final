@@ -4,7 +4,6 @@ google-cloud-storage
 Flask-Login
 Flask-SQLAlchemy
 requests
-pyodbc
 
 g2pkk
 google-api-core

@@ -1,10 +1,11 @@
 import os
 import traceback
-from flask import Flask, redirect, request, send_file, render_template
+from flask import Flask, redirect, request, send_file
 
 #from PIL import Image
 from google.cloud import storage
 from pathlib import Path
+
 
 #request
 import requests
@@ -20,38 +21,12 @@ from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 
-#Loading create app
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-from os import path
-#manages logins
-from flask_login import LoginManager
-
-#database
-import pyodbc 
-
-
 ##from PIL.ExifTags import TAGS
 ##import sys
 
 app = Flask(__name__)
 
-conn = pyodbc.connect('Driver={SQL Server};'
-                      'Server=tcp:s23.winhost.com;'
-                      'Database=DB_127521_jkeepon;'
-                      'Trusted_Connection=no;'
-                      'UID=DB_127521_jkeepon_user;'
-                      'PWD=ndp1999;'
-                      )
 
-cursor = conn.cursor()
-cursor.execute('SELECT * FROM Users')
-
-for i in cursor:
-    print(i)
-
-cursor.close()
 
 @app.route('/')
 def index():
@@ -113,6 +88,7 @@ def index():
         print(f"Decoded Location: {type_string}")
         
         index_html =""" <style>
+        
 
         .image{
             display: block;
@@ -168,29 +144,6 @@ def index():
             color: #009879;
         }
         
-        button {
-                font-family: 'Source Sans Pro', sans-serif;
-                font-weight: 900;
-                padding: 15px 15px;
-                font-size: 0.7rem;
-                position: relative;
-                width:10%
-                overflow: hidden;
-                border: 0;
-                cursor: pointer;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                background-color :  #FFFFFF;
-                color:  #343a40;
-                border:2px solid #2B3467;
-                
-                }
-                button:hover{
-                color:#FFFFFF;
-                background-color:#B22727;
-                border:2px solid #FFFFFF;
-                }
-
         </style>
         <div class = "container">
             <table>
@@ -198,7 +151,15 @@ def index():
                     <td>
 
                     <img class='image' src='"""
-        index_html+= src + "'></td> <td><table class='styled-table'> <caption><h2>Metadata</h2></caption> <thead><tr><th>Category</th><th>Data</th></tr></thead><tbody><tr><td>Filename</td><td>"+name_string+"</td></tr><tr><td>Type</td><td>"+type_string+"</td></tr><tr><td>Size</td><td>"+size_string+"</td></tr><tr><td>Location</td><td>"+location_string+"</td></tr></tbody></table></td></tr> <tr><td></td> <td> <a type='button' href='/delete/"+ name_string +"'><button>Delete</button></a></tr></table></div>"""  
+        index_html+= src + "'></td> <td><table class='styled-table'> <caption><h2>Metadata</h2></caption> <thead><tr><th>Category</th><th>Data</th></tr></thead><tbody><tr><td>Filename</td><td>"+name_string+"</td></tr><tr><td>Type</td><td>"+type_string+"</td></tr><tr><td>Size</td><td>"+size_string+"</td></tr><tr><td>Location</td><td>"+location_string+"</td></tr></tbody></table></td></tr></table></div>"""
+        
+        
+        
+        
+        
+        
+        
+             
        
         return index_html
     else:
@@ -241,6 +202,10 @@ def index():
         
     </form>"""
         
+        
+        
+        
+
 
     # for file in list_files():
     #     index_html += "<img class='image' src=\" /static/image/"+ file + "\">"
@@ -261,6 +226,7 @@ def index():
             image_name = image_url[61:len(image_url)]
             
             #Encoding 
+            #sample_string = "GeeksForGeeks is the best"
             name_bytes = image_name.encode("ascii")
             base64_name_bytes = base64.b64encode(name_bytes)
             base64_name = base64_name_bytes.decode("ascii")
@@ -297,8 +263,15 @@ def index():
             
             print(f"Encoded Type: {base64_type}")
             
-            index_html += "<a href='"+ base_url +"/?image="+ base64_name +"&size="+base64_size+"&location="+base64_location+"&type="+base64_type+"'><img class='image' src='" + blob.public_url + "'></a>" 
+            
+            
+            
+            
+            index_html += "<a href='"+ base_url +"/?image="+ base64_name +"&size="+base64_size+"&location="+base64_location+"&type="+base64_type+"'><img class='image' src='" + blob.public_url + "'></a>"
 
+
+            
+        
     return index_html
 
 
@@ -340,32 +313,6 @@ def get_file(filename):
     print("GET /static/image/"+filename)
     return send_file('./static/image/'+filename)
 
-@app.route('/delete/<filename>')
-def delete_image(filename):
-    storage_client = storage.Client('Project 2')
-    #get the bucket
-    bucket = storage_client.get_bucket(app.config['BUCKET'])
-    blob = bucket.blob('static/image/'+ filename)
-    blob.delete()
-    print("Image Deleted")
-    return redirect('/')
-
-# @app.route('/signup')
-# def sign_up():
-#     if request.method == 'POST':
-#             email = request.form.get('email')
-#             password = request.form.get('password')
-#             print('Email:', email)
-#             print('Email:', password)
-
-#     else:
-#         print("In Sign Up")
-        
-#     return render_template("login.html")
-
-    
-
-
 
 app.config['BUCKET'] = 'project2database'
 app.config['UPLOAD_FOLDER'] = './static/image/'
@@ -374,10 +321,7 @@ def save_picture(picture_fn):
     picture_path = os.path.join(app.config['UPLOAD_FOLDER'], picture_fn)
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(app.config['BUCKET'])
-    #set the path to folder 'static/image/'
-        #blob = bucket.blob('static/image/'+ picture_fn)
-    #set the path to folder '123@gmail.com/'
-    blob = bucket.blob('123@gmail.com/'+picture_fn)
+    blob = bucket.blob('static/image/'+ picture_fn)
     blob.upload_from_filename(picture_path)
 
     return picture_path
@@ -407,8 +351,6 @@ def download_picture():
     #////////////////////////////
 
     return folder_name_on_gcs
-
-
 
 if __name__ == "__main__":
    app.run(debug=True, host="0.0.0.0", port=(os.environ.get("PORT", 8080)))
