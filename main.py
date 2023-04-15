@@ -6,7 +6,6 @@ from flask import Flask, redirect, request, send_file
 from google.cloud import storage
 from pathlib import Path
 
-
 #request
 import requests
 from urllib import parse
@@ -25,7 +24,6 @@ from flask_login import LoginManager
 ##import sys
 
 app = Flask(__name__)
-
 
 
 @app.route('/')
@@ -152,15 +150,8 @@ def index():
 
                     <img class='image' src='"""
         index_html+= src + "'></td> <td><table class='styled-table'> <caption><h2>Metadata</h2></caption> <thead><tr><th>Category</th><th>Data</th></tr></thead><tbody><tr><td>Filename</td><td>"+name_string+"</td></tr><tr><td>Type</td><td>"+type_string+"</td></tr><tr><td>Size</td><td>"+size_string+"</td></tr><tr><td>Location</td><td>"+location_string+"</td></tr></tbody></table></td></tr></table></div>"""
-        
-        
-        
-        
-        
-        
-        
-             
-       
+
+
         return index_html
     else:
         print("html principal")
@@ -201,15 +192,8 @@ def index():
         
         
     </form>"""
-        
-        
-        
-        
+     
 
-
-    # for file in list_files():
-    #     index_html += "<img class='image' src=\" /static/image/"+ file + "\">"
-    
     storage_client = storage.Client('Project 2')
     #get the bucket
     bucket = storage_client.get_bucket(app.config['BUCKET'])
@@ -217,16 +201,12 @@ def index():
     blobs = bucket.list_blobs(prefix='static/image/')
     for blob in blobs:
         if not blob.name.endswith('/'):
-            # This blob is not a directory!
-            #index_html += "<img class='image' src='" + blob.public_url + "'>"
-             #To Do: This goes to a black page (get metadata )
-                
+               
             image_url = blob.public_url
             urlBase = 'https://storage.googleapis.com/project2database/static/image/'
             image_name = image_url[61:len(image_url)]
             
             #Encoding 
-            #sample_string = "GeeksForGeeks is the best"
             name_bytes = image_name.encode("ascii")
             base64_name_bytes = base64.b64encode(name_bytes)
             base64_name = base64_name_bytes.decode("ascii")
@@ -262,16 +242,10 @@ def index():
             base64_type = str(base64_type_bytes.decode("ascii"))
             
             print(f"Encoded Type: {base64_type}")
-            
-            
-            
-            
+
             
             index_html += "<a href='"+ base_url +"/?image="+ base64_name +"&size="+base64_size+"&location="+base64_location+"&type="+base64_type+"'><img class='image' src='" + blob.public_url + "'></a>"
 
-
-            
-        
     return index_html
 
 
