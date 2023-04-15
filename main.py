@@ -21,12 +21,16 @@ from os import path
 from flask_login import LoginManager
 
 #sql server
-import pymssql 
-
+import pymssql
 ##from PIL.ExifTags import TAGS
 ##import sys
 
 app = Flask(__name__)
+
+
+
+
+
 
 
 @app.route('/')
@@ -145,6 +149,29 @@ def index():
             color: #009879;
         }
         
+                button {
+                font-family: 'Source Sans Pro', sans-serif;
+                font-weight: 900;
+                padding: 15px 15px;
+                font-size: 0.7rem;
+                position: relative;
+                width:10%
+                overflow: hidden;
+                border: 0;
+                cursor: pointer;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                background-color :  #FFFFFF;
+                color:  #343a40;
+                border:2px solid #2B3467;
+                
+                }
+                button:hover{
+                color:#FFFFFF;
+                background-color:#B22727;
+                border:2px solid #FFFFFF;
+                }
+        
         </style>
         <div class = "container">
             <table>
@@ -152,7 +179,7 @@ def index():
                     <td>
 
                     <img class='image' src='"""
-        index_html+= src + "'></td> <td><table class='styled-table'> <caption><h2>Metadata</h2></caption> <thead><tr><th>Category</th><th>Data</th></tr></thead><tbody><tr><td>Filename</td><td>"+name_string+"</td></tr><tr><td>Type</td><td>"+type_string+"</td></tr><tr><td>Size</td><td>"+size_string+"</td></tr><tr><td>Location</td><td>"+location_string+"</td></tr></tbody></table></td></tr></table></div>"""
+        index_html+= src + "'></td> <td><table class='styled-table'> <caption><h2>Metadata</h2></caption> <thead><tr><th>Category</th><th>Data</th></tr></thead><tbody><tr><td>Filename</td><td>"+name_string+"</td></tr><tr><td>Type</td><td>"+type_string+"</td></tr><tr><td>Size</td><td>"+size_string+"</td></tr><tr><td>Location</td><td>"+location_string+"</td></tr></tbody></table></td></tr> <tr><td></td> <td> <a type='button' href='/delete/"+ name_string +"'><button>Delete</button></a></tr></table></div>"""  
 
 
         return index_html
@@ -289,6 +316,19 @@ def list_files():
 def get_file(filename):
     print("GET /static/image/"+filename)
     return send_file('./static/image/'+filename)
+
+@app.route('/delete/<filename>')
+def delete_image(filename):
+    storage_client = storage.Client('Project 2')
+    #get the bucket
+    bucket = storage_client.get_bucket(app.config['BUCKET'])
+    blob = bucket.blob('static/image/'+ filename)
+    blob.delete()
+    print("Image Deleted")
+    return redirect('/')
+
+
+
 
 
 app.config['BUCKET'] = 'project2database'
