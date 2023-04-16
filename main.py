@@ -1,6 +1,6 @@
 import os
 import traceback
-from flask import Flask, redirect, request, send_file,render_template
+from flask import Flask, redirect, request, send_file,render_template,session,url_for
 
 #from PIL import Image
 from google.cloud import storage
@@ -27,6 +27,14 @@ import pymssql
 
 app = Flask(__name__)
 
+#start session with secret key
+app.secret_key = 'super secret key'
+app.config['SESSION_TYPE'] = 'filesystem'
+
+#bucket 
+app.config['BUCKET'] = 'project2database'
+app.config['UPLOAD_FOLDER'] = './static/image/'
+
 @app.route('/login', methods = ['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -51,7 +59,8 @@ def login():
                 row = cursor.fetchone()
             conn.close()
             if exist:
-                return redirect('/')
+                session['email'] =  email
+                return redirect(url_for('index'))
               
     return render_template("login.html")
 
@@ -86,14 +95,30 @@ def register():
             conn.commit()            
             conn.close()
             
+            #adding new bucket 
+            storage_client = storage.Client()
+            bucket = storage_client.get_bucket(app.config['BUCKET'])
+            blob = bucket.blob('static/image/'+email+'/')
+            blob.upload_from_string('')
+            
             return redirect('/')
               
     return render_template("signup.html")
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 @app.route('/')
 def index():
     print("GET /")
-       
+    
+    #get email from session
+    email = session['email']
+    print("Email from Session", email)
+    
+    
     r  = request
     base_url = request.base_url
     a = request.args
@@ -265,6 +290,8 @@ def index():
         }
 
         </style>
+        <a href="/logout">logout</a>
+        
         <form method="post" enctype="multipart/form-data" action="/upload" method="post">
             <div>
                 <label for="file">Choose file to upload</label>
@@ -285,12 +312,13 @@ def index():
     #get the bucket
     bucket = storage_client.get_bucket(app.config['BUCKET'])
 
-    blobs = bucket.list_blobs(prefix='static/image/')
+    # blobs = bucket.list_blobs(prefix='static/image/')
+    blobs = bucket.list_blobs(prefix='static/image/'+email+'/')
     for blob in blobs:
         if not blob.name.endswith('/'):
                
             image_url = blob.public_url
-            urlBase = 'https://storage.googleapis.com/project2database/static/image/'
+            urlBase = 'https://storage.googleapis.com/project2database/static/image/'+email+'/'
             image_name = image_url[61:len(image_url)]
             
             #Encoding 
@@ -336,14 +364,20 @@ def index():
     return index_html
 
 @app.route('/upload', methods = ['POST'])
-def upload():    
+def upload(): 
+    
+    email = session['email']   
+    print('Email in Upload', email)
     try:
         print("POST /upload")
         file = request.files['form_file']
         #file.save(os.path.join("./files", file.filename))
+        #file.save(os.path.join("./static/image/", file.filename))
+        
+        #save image
         file.save(os.path.join("./static/image/", file.filename))
 
-        save_picture(file.filename)
+        save_picture(file.filename,email)
         download_picture()
         print("///////////////////////////////////Download was a Success////////////////////////////")
     except:
@@ -382,14 +416,16 @@ def delete_image(filename):
     print("Image Deleted")
     return redirect('/')
 
-app.config['BUCKET'] = 'project2database'
-app.config['UPLOAD_FOLDER'] = './static/image/'
 
-def save_picture(picture_fn):
+
+def save_picture(picture_fn,email):
     picture_path = os.path.join(app.config['UPLOAD_FOLDER'], picture_fn)
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(app.config['BUCKET'])
-    blob = bucket.blob('static/image/'+ picture_fn)
+    #if bucket is from user xx add
+    #path for bucket
+    #bucket_path = "static/image/"+email+"/"
+    blob = bucket.blob('static/image/'+email+'/'+ picture_fn)
     blob.upload_from_filename(picture_path)
 
     return picture_path
