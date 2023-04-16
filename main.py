@@ -1,6 +1,6 @@
 import os
 import traceback
-from flask import Flask, redirect, request, send_file,render_template,session,url_for
+from flask import Flask, redirect, request, send_file,render_template
 
 #from PIL import Image
 from google.cloud import storage
@@ -27,13 +27,6 @@ import pymssql
 
 app = Flask(__name__)
 
-app.secret_key = 'super secret key'
-app.config['SESSION_TYPE'] = 'filesystem'
-
-
-
-
-
 @app.route('/login', methods = ['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -58,8 +51,7 @@ def login():
                 row = cursor.fetchone()
             conn.close()
             if exist:
-                session['email'] =  email
-                return redirect(url_for('index'))
+                return redirect('/')
               
     return render_template("login.html")
 
@@ -101,12 +93,7 @@ def register():
 @app.route('/')
 def index():
     print("GET /")
-    
-    #get email from session
-    email = session['email']
-    print("Email from Session", email)
-    
-    
+       
     r  = request
     base_url = request.base_url
     a = request.args
@@ -349,20 +336,14 @@ def index():
     return index_html
 
 @app.route('/upload', methods = ['POST'])
-def upload(): 
-    
-    email = session['email']   
-    print('Email in Upload', email)
+def upload():    
     try:
         print("POST /upload")
         file = request.files['form_file']
         #file.save(os.path.join("./files", file.filename))
-        #file.save(os.path.join("./static/image/", file.filename))
-        
-        #save image
         file.save(os.path.join("./static/image/", file.filename))
 
-        save_picture(file.filename,email)
+        save_picture(file.filename)
         download_picture()
         print("///////////////////////////////////Download was a Success////////////////////////////")
     except:
@@ -404,14 +385,11 @@ def delete_image(filename):
 app.config['BUCKET'] = 'project2database'
 app.config['UPLOAD_FOLDER'] = './static/image/'
 
-def save_picture(picture_fn,email):
+def save_picture(picture_fn):
     picture_path = os.path.join(app.config['UPLOAD_FOLDER'], picture_fn)
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(app.config['BUCKET'])
-    #if bucket is from user xx add
-    #path for bucket
-    #bucket_path = "static/image/"+email+"/"
-    blob = bucket.blob('static/image/'+email+'/'+ picture_fn)
+    blob = bucket.blob('static/image/'+ picture_fn)
     blob.upload_from_filename(picture_path)
 
     return picture_path
