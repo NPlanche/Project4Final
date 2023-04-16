@@ -27,13 +27,12 @@ import pymssql
 
 app = Flask(__name__)
 
-#start session with secret key
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
 
-#bucket 
-app.config['BUCKET'] = 'project2database'
-app.config['UPLOAD_FOLDER'] = './static/image/'
+
+
+
 
 @app.route('/login', methods = ['GET','POST'])
 def login():
@@ -95,20 +94,9 @@ def register():
             conn.commit()            
             conn.close()
             
-            #adding new bucket 
-            storage_client = storage.Client()
-            bucket = storage_client.get_bucket(app.config['BUCKET'])
-            blob = bucket.blob('static/image/'+email+'/')
-            blob.upload_from_string('')
-            
             return redirect('/')
               
     return render_template("signup.html")
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
 
 @app.route('/')
 def index():
@@ -290,8 +278,6 @@ def index():
         }
 
         </style>
-        <a href="/logout">logout</a>
-        
         <form method="post" enctype="multipart/form-data" action="/upload" method="post">
             <div>
                 <label for="file">Choose file to upload</label>
@@ -312,13 +298,12 @@ def index():
     #get the bucket
     bucket = storage_client.get_bucket(app.config['BUCKET'])
 
-    # blobs = bucket.list_blobs(prefix='static/image/')
-    blobs = bucket.list_blobs(prefix='static/image/'+email+'/')
+    blobs = bucket.list_blobs(prefix='static/image/')
     for blob in blobs:
         if not blob.name.endswith('/'):
                
             image_url = blob.public_url
-            urlBase = 'https://storage.googleapis.com/project2database/static/image/'+email+'/'
+            urlBase = 'https://storage.googleapis.com/project2database/static/image/'
             image_name = image_url[61:len(image_url)]
             
             #Encoding 
@@ -416,7 +401,8 @@ def delete_image(filename):
     print("Image Deleted")
     return redirect('/')
 
-
+app.config['BUCKET'] = 'project2database'
+app.config['UPLOAD_FOLDER'] = './static/image/'
 
 def save_picture(picture_fn,email):
     picture_path = os.path.join(app.config['UPLOAD_FOLDER'], picture_fn)
