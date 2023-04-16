@@ -27,9 +27,20 @@ import pymssql
 
 app = Flask(__name__)
 
+conn = pymssql.connect(server='s23.winhost.com',
+                       user='DB_127521_jkeepon_user', 
+                       password='ndp1999', 
+                       database='DB_127521_jkeepon'
+                       )  
 
+cursor = conn.cursor()  
+cursor.execute('SELECT * FROM Users')  
+row = cursor.fetchone()  
+while row:  
+    print(str(row[0]) + " " + str(row[1]) + " " + str(row[2]))     
+    row = cursor.fetchone()
 
-
+conn.close()
 
 
 
@@ -326,10 +337,6 @@ def delete_image(filename):
     blob.delete()
     print("Image Deleted")
     return redirect('/')
-
-
-
-
 
 app.config['BUCKET'] = 'project2database'
 app.config['UPLOAD_FOLDER'] = './static/image/'
