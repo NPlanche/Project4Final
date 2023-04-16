@@ -4,7 +4,9 @@ google-cloud-storage
 flask_login
 Flask-SQLAlchemy
 requests
-pymssql 
+pymssql
+session
+url_for 
 
 
 

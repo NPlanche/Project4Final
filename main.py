@@ -1,6 +1,6 @@
 import os
 import traceback
-from flask import Flask, redirect, request, send_file,render_template
+from flask import Flask, redirect, request, send_file,render_template,session,url_for
 
 #from PIL import Image
 from google.cloud import storage
@@ -27,7 +27,8 @@ import pymssql
 
 app = Flask(__name__)
 
-@app.route('/login', methods = ['GET','POST'])
+#@app.route('/login', methods = ['GET','POST'])
+@app.route('/', methods = ['GET','POST'])
 def login():
     if request.method == 'POST':
             email = request.form.get('email')
@@ -51,51 +52,53 @@ def login():
                 row = cursor.fetchone()
             conn.close()
             if exist:
-                return redirect('/')
+                return redirect(url_for('index'))
               
     return render_template("login.html")
 
 @app.route('/register', methods = ['GET','POST'])
 def register():
     if request.method == 'POST':
-            email = request.form.get('email')
-            password = request.form.get('password')
-            passwordHash = password # encriptar password 
-            
-            print('Email:', email)
-            print('Password:', password)
-            
-            conn = pymssql.connect(server='s23.winhost.com',
-                       user='DB_127521_jkeepon_user', 
-                       password='ndp1999', 
-                       database='DB_127521_jkeepon'
-                       )  
-            cursor = conn.cursor()  
-            cursor.execute("SELECT * FROM Users WHERE Email='"+email+"'")  
+        email = request.form.get('email')
+        password = request.form.get('password')
+        passwordHash = password # encriptar password 
+        
+        print('Email:', email)
+        print('Password:', password)
+        
+        conn = pymssql.connect(server='s23.winhost.com',
+                    user='DB_127521_jkeepon_user', 
+                    password='ndp1999', 
+                    database='DB_127521_jkeepon'
+                    )  
+        cursor = conn.cursor()  
+        cursor.execute("SELECT * FROM Users WHERE Email='"+email+"'")  
+        row = cursor.fetchone()
+        exist = False  
+        while row:  
+            exist = True
             row = cursor.fetchone()
-            exist = False  
-            while row:  
-                exist = True
-                row = cursor.fetchone()
-            if exist:
-                conn.close()
-                return redirect('/register')
-                
-            cursor = conn.cursor()  
-            cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('"+email+"'"+",'"+passwordHash+"')")  
-            conn.commit()            
+        if exist:
             conn.close()
+            return redirect('/register')
             
-            return redirect('/')
+        cursor = conn.cursor()  
+        cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('"+email+"'"+",'"+passwordHash+"')")  
+        conn.commit()            
+        conn.close()
+        
+        return redirect(url_for('index'))
               
     return render_template("signup.html")
 
-@app.route('/')
+@app.route('/home')
 def index():
     print("GET /")
        
     r  = request
     base_url = request.base_url
+    
+    
     a = request.args
     f = request.full_path
     print(f"Full path: {f}")
@@ -375,13 +378,6 @@ def download_picture():
     return folder_name_on_gcs
 
 #Encode and Decode
-# def string_decode(sample_string):
-#     sample_string_bytes = sample_string.encode("ascii")
-#     base64_bytes = base64.b64encode(sample_string_bytes)
-#     base64_string = base64_bytes.decode("ascii")
-#     print(f"Encoded string: {base64_string}")
-
-#     return base64_string
 
 def string_decode(query_def_size):
     base64_size_bytes = query_def_size.encode("ascii")        
@@ -397,13 +393,6 @@ def string_encode(query_def_size):
     print(f"Encoded: {base64_name}")
     return base64_name
     
-# def string_encode(base64_string):
-#     base64_bytes = base64_string.encode("ascii")
-#     sample_string_bytes = base64.b64decode(base64_bytes)
-#     sample_string = sample_string_bytes.decode("ascii")
-#     print(f"Decoded string: {sample_string}")
-    
-#     return sample_string
 
 
 
