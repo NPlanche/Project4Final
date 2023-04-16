@@ -39,6 +39,12 @@ row = cursor.fetchone()
 while row:  
     print(str(row[0]) + " " + str(row[1]) + " " + str(row[2]))     
     row = cursor.fetchone()
+    
+    
+#Insert user 
+cursor = conn.cursor()  
+cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('123@gmail.com','123123')")  
+conn.commit()
 
 conn.close()
 
