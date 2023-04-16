@@ -113,45 +113,23 @@ def index():
         query_def_type = query['type'][0]
 
         
-        #TODO: Make encoding and decoding functions
         #Name
-        base64_name_bytes = query_def_name.encode("ascii")
-            
-        name_string_bytes = base64.b64decode(base64_name_bytes)
-        name_string = name_string_bytes.decode("ascii")
-            
-        print(f"Decoded Name: {name_string}")
+        name_string = string_decode(query_def_name)
         
         src = urlBase + name_string
         print(f"URL: {src}")
         
         #Size
-        base64_size_bytes = query_def_size.encode("ascii")
-            
-        size_string_bytes = base64.b64decode(base64_size_bytes)
-        size_string = size_string_bytes.decode("ascii")
-            
-        print(f"Decoded Size: {size_string}")
+        size_string = string_decode(query_def_size)
         
         #Location 
-        base64_location_bytes = query_def_location.encode("ascii")
-            
-        location_string_bytes = base64.b64decode(base64_location_bytes)
-        location_string = location_string_bytes.decode("ascii")
-            
-        print(f"Decoded Location: {location_string}")
+        location_string = string_decode(query_def_location)
         
         #Type
-        base64_type_bytes = query_def_type.encode("ascii")
-            
-        type_string_bytes = base64.b64decode(base64_type_bytes)
-        type_string = type_string_bytes.decode("ascii")
-            
-        print(f"Decoded Location: {type_string}")
+        type_string = string_decode(query_def_type)
         
         index_html =""" <style>
         
-
         .image{
             display: block;
             width: 400px;
@@ -234,7 +212,6 @@ def index():
             <table>
                 <tr>
                     <td>
-
                     <img class='image' src='"""
         index_html+= src + "'></td> <td><table class='styled-table'> <caption><h2>Metadata</h2></caption> <thead><tr><th>Category</th><th>Data</th></tr></thead><tbody><tr><td>Filename</td><td>"+name_string+"</td></tr><tr><td>Type</td><td>"+type_string+"</td></tr><tr><td>Size</td><td>"+size_string+"</td></tr><tr><td>Location</td><td>"+location_string+"</td></tr></tbody></table></td></tr> <tr><td></td> <td> <a type='button' href='/delete/"+ name_string +"'><button>Delete</button></a></tr></table></div>"""  
 
@@ -245,7 +222,6 @@ def index():
 
         index_html="""<style>
         
-
         form{
             font-family: "Raleway", Arial, sans-serif
         }
@@ -263,7 +239,6 @@ def index():
         button{
             background-color: lightgray;
         }
-
         </style>
         <form method="post" enctype="multipart/form-data" action="/upload" method="post">
             <div>
@@ -274,7 +249,6 @@ def index():
                 <button>Submit</button>
             </div>
             <hr>
-
             <h1 class='title'>Gallery</h1>
         
         
@@ -293,43 +267,23 @@ def index():
             urlBase = 'https://storage.googleapis.com/project2database/static/image/'
             image_name = image_url[61:len(image_url)]
             
-            #Encoding 
-            name_bytes = image_name.encode("ascii")
-            base64_name_bytes = base64.b64encode(name_bytes)
-            base64_name = base64_name_bytes.decode("ascii")
-            
-            print(f"Encoded Name: {base64_name}")
+            #Encoding
+            base64_name = string_encode(image_name) 
             
             #Encoding 
             #Size
             size = str(blob.size)
-            size_bytes = size.encode("ascii")
-            
-            base64_size_bytes = base64.b64encode(size_bytes)
-            base64_size = str(base64_size_bytes.decode("ascii"))
-            
-            print(f"Encoded Size: {base64_size}")
+            base64_size = string_encode(size) 
             
             #Encoding
             #Location
             location = str(blob.public_url)
-            location_bytes = location.encode("ascii")
-            
-            base64_location_bytes = base64.b64encode(location_bytes)
-            base64_location = str(base64_location_bytes.decode("ascii"))
-            
-            print(f"Encoded Location: {base64_location}")
+            base64_location = string_encode(location) 
             
             #Encoding
             #Type
             type = str(blob.content_type)
-            type_bytes = type.encode("ascii")
-            
-            base64_type_bytes = base64.b64encode(type_bytes)
-            base64_type = str(base64_type_bytes.decode("ascii"))
-            
-            print(f"Encoded Type: {base64_type}")
-
+            base64_type = string_encode(type) 
             
             index_html += "<a href='"+ base_url +"/?image="+ base64_name +"&size="+base64_size+"&location="+base64_location+"&type="+base64_type+"'><img class='image' src='" + blob.public_url + "'></a>"
 
@@ -419,6 +373,39 @@ def download_picture():
     #////////////////////////////
 
     return folder_name_on_gcs
+
+#Encode and Decode
+# def string_decode(sample_string):
+#     sample_string_bytes = sample_string.encode("ascii")
+#     base64_bytes = base64.b64encode(sample_string_bytes)
+#     base64_string = base64_bytes.decode("ascii")
+#     print(f"Encoded string: {base64_string}")
+
+#     return base64_string
+
+def string_decode(query_def_size):
+    base64_size_bytes = query_def_size.encode("ascii")        
+    size_string_bytes = base64.b64decode(base64_size_bytes)
+    size_string = size_string_bytes.decode("ascii")        
+    print(f"Decoded: {size_string}")
+    return size_string
+    
+def string_encode(query_def_size):
+    name_bytes = query_def_size.encode("ascii")
+    base64_name_bytes = base64.b64encode(name_bytes)
+    base64_name = base64_name_bytes.decode("ascii")        
+    print(f"Encoded: {base64_name}")
+    return base64_name
+    
+# def string_encode(base64_string):
+#     base64_bytes = base64_string.encode("ascii")
+#     sample_string_bytes = base64.b64decode(base64_bytes)
+#     sample_string = sample_string_bytes.decode("ascii")
+#     print(f"Decoded string: {sample_string}")
+    
+#     return sample_string
+
+
 
 if __name__ == "__main__":
    app.run(debug=True, host="0.0.0.0", port=(os.environ.get("PORT", 8080)))
