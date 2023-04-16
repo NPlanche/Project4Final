@@ -1,6 +1,6 @@
 import os
 import traceback
-from flask import Flask, redirect, request, send_file
+from flask import Flask, redirect, request, send_file,render_template
 
 #from PIL import Image
 from google.cloud import storage
@@ -27,28 +27,68 @@ import pymssql
 
 app = Flask(__name__)
 
-conn = pymssql.connect(server='s23.winhost.com',
+@app.route('/login', methods = ['GET','POST'])
+def login():
+    if request.method == 'POST':
+            email = request.form.get('email')
+            password = request.form.get('password')
+            passwordHash = password # encriptar password 
+            
+            print('Email:', email)
+            print('Password:', password)
+            
+            conn = pymssql.connect(server='s23.winhost.com',
                        user='DB_127521_jkeepon_user', 
                        password='ndp1999', 
                        database='DB_127521_jkeepon'
                        )  
+            cursor = conn.cursor()  
+            cursor.execute("SELECT * FROM Users WHERE Email='"+email+"' AND passwordHash = '" +passwordHash+"'")  
+            row = cursor.fetchone()
+            exist = False  
+            while row:  
+                exist = True
+                row = cursor.fetchone()
+            conn.close()
+            if exist:
+                return redirect('/')
+              
+    return render_template("login.html")
 
-cursor = conn.cursor()  
-cursor.execute('SELECT * FROM Users')  
-row = cursor.fetchone()  
-while row:  
-    print(str(row[0]) + " " + str(row[1]) + " " + str(row[2]))     
-    row = cursor.fetchone()
-    
-    
-#Insert user 
-cursor = conn.cursor()  
-cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('123@gmail.com','123123')")  
-conn.commit()
-
-conn.close()
-
-
+@app.route('/register', methods = ['GET','POST'])
+def register():
+    if request.method == 'POST':
+            email = request.form.get('email')
+            password = request.form.get('password')
+            passwordHash = password # encriptar password 
+            
+            print('Email:', email)
+            print('Password:', password)
+            
+            conn = pymssql.connect(server='s23.winhost.com',
+                       user='DB_127521_jkeepon_user', 
+                       password='ndp1999', 
+                       database='DB_127521_jkeepon'
+                       )  
+            cursor = conn.cursor()  
+            cursor.execute("SELECT * FROM Users WHERE Email='"+email+"'")  
+            row = cursor.fetchone()
+            exist = False  
+            while row:  
+                exist = True
+                row = cursor.fetchone()
+            if exist:
+                conn.close()
+                return redirect('/register')
+                
+            cursor = conn.cursor()  
+            cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('"+email+"'"+",'"+passwordHash+"')")  
+            conn.commit()            
+            conn.close()
+            
+            return redirect('/')
+              
+    return render_template("signup.html")
 
 @app.route('/')
 def index():
@@ -295,7 +335,6 @@ def index():
 
     return index_html
 
-
 @app.route('/upload', methods = ['POST'])
 def upload():    
     try:
@@ -313,7 +352,6 @@ def upload():
     # except Exception as err:
     #     print(f"Unexpected {err=}, {type(err)=}")
     return redirect('/')
-
 
 @app.route('/static/image/')
 def list_files():
@@ -384,3 +422,4 @@ def download_picture():
 
 if __name__ == "__main__":
    app.run(debug=True, host="0.0.0.0", port=(os.environ.get("PORT", 8080)))
+   
