@@ -25,14 +25,16 @@ import pymssql
 ##from PIL.ExifTags import TAGS
 ##import sys
 
+
+
 app = Flask(__name__)
 
 #Session Secret Key 
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
 
-@app.route('/login', methods = ['GET','POST'])
-#@app.route('/', methods = ['GET','POST'])
+#@app.route('/login', methods = ['GET','POST'])
+@app.route('/', methods = ['GET','POST'])
 def login():
     if request.method == 'POST':
             email = request.form.get('email')
@@ -56,8 +58,9 @@ def login():
                 row = cursor.fetchone()
             conn.close()
             if exist:
-                session['email'] = email
-                print('The user in session in login:', email)
+                #set the user
+                session['email'] =  email
+                print('User Session in Login:', email)
                 return redirect(url_for('index'))
               
     return render_template("login.html")
@@ -86,8 +89,6 @@ def register():
             row = cursor.fetchone()
         if exist:
             conn.close()
-            session['email'] = email
-            print('The user in session in register:', email)
             return redirect('/register')
             
         cursor = conn.cursor()  
@@ -95,17 +96,19 @@ def register():
         conn.commit()            
         conn.close()
         
+        #set the user using the email
+        session['email'] =  email
+        print('User Session in Register:', email)
+
+
+        
         return redirect(url_for('index'))
               
     return render_template("signup.html")
 
-@app.route('/')
+@app.route('/home')
 def index():
-    print("GET /")
-      # check if the users exist or not
-    if not session.get("email"):
-        # if not there in the session then redirect to the login page
-        return redirect('/login')
+    print("GET /home")
        
     r  = request
     base_url = request.base_url
@@ -114,7 +117,7 @@ def index():
     a = request.args
     f = request.full_path
     print(f"Full path: {f}")
-    substring = f[0:8]
+    substring = f[0:16]
     
     url = base_url + f
     
@@ -255,7 +258,7 @@ def index():
             background-color: lightgray;
         }
         </style>
-        <a href="/logout">logout</a>
+        
         <form method="post" enctype="multipart/form-data" action="/upload" method="post">
             <div>
                 <label for="file">Choose file to upload</label>
@@ -285,22 +288,26 @@ def index():
             
             #Encoding
             base64_name = string_encode(image_name) 
+            #base64_name = image_name
             
             #Encoding 
             #Size
             size = str(blob.size)
             base64_size = string_encode(size) 
+            #base64_size = size
             
             #Encoding
             #Location
             location = str(blob.public_url)
             base64_location = string_encode(location) 
+            #base64_location = location
             
             #Encoding
             #Type
             type = str(blob.content_type)
             base64_type = string_encode(type) 
-            
+            #base64_type = type
+
             index_html += "<a href='"+ base_url +"/?image="+ base64_name +"&size="+base64_size+"&location="+base64_location+"&type="+base64_type+"'><img class='image' src='" + blob.public_url + "'></a>"
 
     return index_html
@@ -387,9 +394,11 @@ def download_picture():
             blob.download_to_filename(f'./{blob.name}')
 
     #////////////////////////////
+
     return folder_name_on_gcs
 
 #Encode and Decode
+
 def string_decode(query_def_size):
     base64_size_bytes = query_def_size.encode("ascii")        
     size_string_bytes = base64.b64decode(base64_size_bytes)
@@ -404,10 +413,7 @@ def string_encode(query_def_size):
     print(f"Encoded: {base64_name}")
     return base64_name
     
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
+
 
 
 if __name__ == "__main__":
