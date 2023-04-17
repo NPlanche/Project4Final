@@ -280,17 +280,19 @@ def index():
         
     </form>"""
      
-
+    #Use Email to save picture
+    user_email = session['email']
     storage_client = storage.Client('Project 2')
     #get the bucket
     bucket = storage_client.get_bucket(app.config['BUCKET'])
+    #blobs = bucket.list_blobs(prefix='static/image/')
+    blobs = bucket.list_blobs(prefix='static/image/'+user_email+'/')
 
-    blobs = bucket.list_blobs(prefix='static/image/')
     for blob in blobs:
         if not blob.name.endswith('/'):
                
             image_url = blob.public_url
-            urlBase = 'https://storage.googleapis.com/project2database/static/image/'
+            urlBase = 'https://storage.googleapis.com/project2database/static/image/'+user_email+'/'
             image_name = image_url[61:len(image_url)]
             
             #Encoding
@@ -377,9 +379,7 @@ def save_picture(picture_fn,email):
     picture_path = os.path.join(app.config['UPLOAD_FOLDER'], picture_fn)
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(app.config['BUCKET'])
-    #blob = bucket.blob('static/image/'+ picture_fn)
     blob = bucket.blob('static/image/'+email+'/'+ picture_fn)
-
     blob.upload_from_filename(picture_path)
 
     return picture_path
