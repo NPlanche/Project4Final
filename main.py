@@ -25,7 +25,13 @@ import pymssql
 ##from PIL.ExifTags import TAGS
 ##import sys
 
+
+
 app = Flask(__name__)
+
+#Session Secret Key 
+app.secret_key = 'super secret key'
+app.config['SESSION_TYPE'] = 'filesystem'
 
 #@app.route('/login', methods = ['GET','POST'])
 @app.route('/', methods = ['GET','POST'])
@@ -52,6 +58,9 @@ def login():
                 row = cursor.fetchone()
             conn.close()
             if exist:
+                #set the user
+                session['email'] =  email
+                print('User Session in Login:', email)
                 return redirect(url_for('index'))
               
     return render_template("login.html")
@@ -86,6 +95,12 @@ def register():
         cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('"+email+"'"+",'"+passwordHash+"')")  
         conn.commit()            
         conn.close()
+        
+        #set the user using the email
+        session['email'] =  email
+        print('User Session in Register:', email)
+
+
         
         return redirect(url_for('index'))
               
