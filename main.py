@@ -31,6 +31,7 @@ app = Flask(__name__)
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
 
+#Login
 @app.route('/login', methods = ['GET','POST'])
 #@app.route('/', methods = ['GET','POST'])
 def login():
@@ -62,6 +63,7 @@ def login():
               
     return render_template("login.html")
 
+#Register
 @app.route('/register', methods = ['GET','POST'])
 def register():
     if request.method == 'POST':
@@ -86,23 +88,31 @@ def register():
             row = cursor.fetchone()
         if exist:
             conn.close()
-            session['email'] = email
-            print('The user in session in register:', email)
             return redirect('/register')
             
         cursor = conn.cursor()  
         cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('"+email+"'"+",'"+passwordHash+"')")  
-        conn.commit()            
+        conn.commit()         
+           
         conn.close()
-        
+        session['email'] = email
+        print('The user in session in register:', email)
         return redirect(url_for('index'))
               
     return render_template("signup.html")
 
+#Logout Route
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+#Home
 @app.route('/')
 def index():
     print("GET /")
-      # check if the users exist or not
+    
+    # check if the users has logged in or not
     if not session.get("email"):
         # if not there in the session then redirect to the login page
         return redirect('/login')
@@ -305,6 +315,7 @@ def index():
 
     return index_html
 
+#Upload Image
 @app.route('/upload', methods = ['POST'])
 def upload():    
     try:
@@ -350,11 +361,12 @@ def delete_image(filename):
     blob = bucket.blob('static/image/'+ filename)
     blob.delete()
     print("Image Deleted")
-    return redirect('/')
+    return redirect(url_for('index'))
 
 app.config['BUCKET'] = 'project2database'
 app.config['UPLOAD_FOLDER'] = './static/image/'
 
+#Save image to the bucket
 def save_picture(picture_fn):
     picture_path = os.path.join(app.config['UPLOAD_FOLDER'], picture_fn)
     storage_client = storage.Client()
@@ -364,6 +376,7 @@ def save_picture(picture_fn):
 
     return picture_path
 
+#download an image local folder
 def download_picture():
     
     print("Download Inages from Bucket")
@@ -404,10 +417,7 @@ def string_encode(query_def_size):
     print(f"Encoded: {base64_name}")
     return base64_name
     
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
+
 
 
 if __name__ == "__main__":
