@@ -317,14 +317,18 @@ def index():
 
 #Upload Image
 @app.route('/upload', methods = ['POST'])
-def upload():    
+def upload():   
+     
     try:
         print("POST /upload")
         file = request.files['form_file']
         #file.save(os.path.join("./files", file.filename))
         file.save(os.path.join("./static/image/", file.filename))
+        
+        #Use Email to save picture
+        user_email = session['email']
 
-        save_picture(file.filename)
+        save_picture(file.filename, user_email)
         download_picture()
         print("///////////////////////////////////Download was a Success////////////////////////////")
     except:
@@ -363,15 +367,19 @@ def delete_image(filename):
     print("Image Deleted")
     return redirect(url_for('index'))
 
+
+
 app.config['BUCKET'] = 'project2database'
 app.config['UPLOAD_FOLDER'] = './static/image/'
 
 #Save image to the bucket
-def save_picture(picture_fn):
+def save_picture(picture_fn,email):
     picture_path = os.path.join(app.config['UPLOAD_FOLDER'], picture_fn)
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(app.config['BUCKET'])
-    blob = bucket.blob('static/image/'+ picture_fn)
+    #blob = bucket.blob('static/image/'+ picture_fn)
+    blob = bucket.blob('static/image/'+email+'/'+ picture_fn)
+
     blob.upload_from_filename(picture_path)
 
     return picture_path
