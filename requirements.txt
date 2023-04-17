@@ -3,10 +3,8 @@ gunicorn
 google-cloud-storage
 flask_login
 Flask-SQLAlchemy
-requests
 pymssql
-session
-url_for 
+
 
 
 
