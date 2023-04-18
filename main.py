@@ -37,7 +37,6 @@ def login():
             password = request.form.get('password')
             
             # Validate Input
-            
             valid_email = check(email)
             valid_pass = len(password)
             
@@ -54,9 +53,7 @@ def login():
                         password = os.environ["PASSWORD"], 
                         database = os.environ["DATABASE"]
                         )              
-                
-                
-                
+           
                 cursor = conn.cursor()  
                 cursor.execute("SELECT * FROM Users WHERE Email='"+email+"' AND passwordHash = '" +passwordHash+"'")  
                 row = cursor.fetchone()
@@ -89,39 +86,49 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        passwordHash =  string_encode(password) # encriptar password 
+        # Validate Input
+        valid_email = check(email)
+        valid_pass = len(password)
         
-        print('Email:', email)
-        print('Password:', password)
-        
-        # Env Variables
-        conn = pymssql.connect(server = os.environ["SEVER"],
-                    user = os.environ["USER"], 
-                    password = os.environ["PASSWORD"], 
-                    database = os.environ["DATABASE"]
-                    )    
-   
-        
-        cursor = conn.cursor()  
-        cursor.execute("SELECT * FROM Users WHERE Email='"+email+"'")  
-        row = cursor.fetchone()
-        exist = False  
-        while row:  
-            exist = True
-            row = cursor.fetchone()
-
-        if exist:
-            error = 'An account with this email address has already been registered.'
-            conn.close()
-        else:    
-            cursor = conn.cursor()  
-            cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('"+email+"'"+",'"+passwordHash+"')")  
-            conn.commit()         
+        #the email is valid and the password if not empty
+        if valid_email and (valid_pass > 0):
+            passwordHash = string_encode(password) # encriptar password 
             
-            conn.close()
-            session['email'] = email
-            print('The user in session in register:', email)
-            return redirect(url_for('index'))
+            passwordHash =  string_encode(password) # encriptar password 
+            
+            print('Email:', email)
+            print('Password:', password)
+            
+            # Env Variables
+            conn = pymssql.connect(server = os.environ["SEVER"],
+                        user = os.environ["USER"], 
+                        password = os.environ["PASSWORD"], 
+                        database = os.environ["DATABASE"]
+                        )    
+    
+            
+            cursor = conn.cursor()  
+            cursor.execute("SELECT * FROM Users WHERE Email='"+email+"'")  
+            row = cursor.fetchone()
+            exist = False  
+            while row:  
+                exist = True
+                row = cursor.fetchone()
+
+            if exist:
+                error = 'An account with this email address has already been registered.'
+                conn.close()
+            else:    
+                cursor = conn.cursor()  
+                cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('"+email+"'"+",'"+passwordHash+"')")  
+                conn.commit()         
+                
+                conn.close()
+                session['email'] = email
+                print('The user in session in register:', email)
+                return redirect(url_for('index'))
+        else:
+          error = "Please provide a valid email and password"  
               
     return render_template("signup.html",error = error)
 
