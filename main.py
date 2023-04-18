@@ -281,7 +281,7 @@ def index():
                     height: 225px;
                 }
                 *{
-                    background-color: #90EE90;
+                    background-color: #72bcd4;
                 }
                 button{
                     background-color: lightgray;
