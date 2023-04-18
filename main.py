@@ -36,37 +36,46 @@ def login():
             email = request.form.get('email')
             password = request.form.get('password')
             
-            passwordHash = string_encode(password) # encriptar password 
+            # Validate Input
             
-            print('Email:', email)
-            print('Password:', password)
+            valid_email = check(email)
+            valid_pass = len(password)
             
-            # Env Variables
-            conn = pymssql.connect(server = os.environ["SEVER"],
-                       user = os.environ["USER"], 
-                       password = os.environ["PASSWORD"], 
-                       database = os.environ["DATABASE"]
-                       )              
-            
-            
-            
-            cursor = conn.cursor()  
-            cursor.execute("SELECT * FROM Users WHERE Email='"+email+"' AND passwordHash = '" +passwordHash+"'")  
-            row = cursor.fetchone()
-            exist = False  
-            while row:  
-                exist = True
+            #the email is valid and the password if not empty
+            if valid_email and (valid_pass > 0):
+                passwordHash = string_encode(password) # encriptar password 
+                
+                print('Email:', email)
+                print('Password:', password)
+                
+                # Env Variables
+                conn = pymssql.connect(server = os.environ["SEVER"],
+                        user = os.environ["USER"], 
+                        password = os.environ["PASSWORD"], 
+                        database = os.environ["DATABASE"]
+                        )              
+                
+                
+                
+                cursor = conn.cursor()  
+                cursor.execute("SELECT * FROM Users WHERE Email='"+email+"' AND passwordHash = '" +passwordHash+"'")  
                 row = cursor.fetchone()
+                exist = False  
+                while row:  
+                    exist = True
+                    row = cursor.fetchone()
 
-            conn.close()
-            
-            if exist:
-                session['email'] = email
-                print('The user in session in login:', email)
-                return redirect(url_for('index'))
+                conn.close()
+                
+                if exist:
+                    session['email'] = email
+                    print('The user in session in login:', email)
+                    return redirect(url_for('index'))
+                else:
+                    error = "The credentials provided are invalid or there is no account registered with this email."
             else:
-                error = "The credentials provided are invalid or there is no account registered with this email."
-            
+                error = "Please provide a valid email and password"
+                
               
     return render_template("login.html", error = error)
 
@@ -463,6 +472,17 @@ def string_encode(query_def_size):
     base64_name = base64_name_bytes.decode("ascii")        
     print(f"Encoded: {base64_name}")
     return base64_name
+
+#Email Validation
+def check(s):
+    pat = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+    valid = False
+    if re.match(pat,s):
+        valid  = True
+        print("Valid Email")
+    else:
+        print("Invalid Email")
+    return valid
 
 if __name__ == "__main__":
    app.run(debug=True, host="0.0.0.0", port=(os.environ.get("PORT", 8080)))
