@@ -93,6 +93,7 @@ def register():
                     database='DB_127521_jkeepon'
                     )  
    
+        # Env Variables
         # conn = pymssql.connect(server = os.environ["SEVER"],
         #             user = os.environ["USER"], 
         #             password = os.environ["PASSWORD"], 
