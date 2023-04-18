@@ -44,14 +44,6 @@ def login():
             print('Email:', email)
             print('Password:', password)
             
-            
-            
-            # conn = pymssql.connect(server='s23.winhost.com',
-            #            user='DB_127521_jkeepon_user', 
-            #            password='ndp1999', 
-            #            database='DB_127521_jkeepon'
-            #            )  
-        
             # Env Variables
             conn = pymssql.connect(server = os.environ["SEVER"],
                        user = os.environ["USER"], 
@@ -96,12 +88,6 @@ def register():
         print('Email:', email)
         print('Password:', password)
         
-        # conn = pymssql.connect(server='s23.winhost.com',
-        #             user='DB_127521_jkeepon_user', 
-        #             password='ndp1999', 
-        #             database='DB_127521_jkeepon'
-        #             )  
-   
         # Env Variables
         conn = pymssql.connect(server = os.environ["SEVER"],
                     user = os.environ["USER"], 
@@ -121,7 +107,6 @@ def register():
         if exist:
             error = 'An account with this email address has already been registered.'
             conn.close()
-            #return redirect('/register')
         else:    
             cursor = conn.cursor()  
             cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('"+email+"'"+",'"+passwordHash+"')")  
@@ -188,12 +173,14 @@ def index():
             size_string = string_decode(query_def_size)
             
             #Location 
+
             location_string = string_decode(query_def_location)
+            location_string = location_string.replace('@','%40')
+            location_string = location_string.replace('@','https://storage.googleapis.com/project2database/')
 
             
             #Type
             type_string = string_decode(query_def_type)
-            
             
             
             index_html =""" <style>
@@ -425,7 +412,8 @@ def delete_image(email,name):
     print("Image Deleted")
     return redirect(url_for('index'))
 
-app.config['BUCKET'] = 'project2database'
+#app.config['BUCKET'] = 'project2database'
+app.config['BUCKET'] =os.environ["BUCKET"]
 app.config['UPLOAD_FOLDER'] = './static/image/'
 
 #Save image to the bucket
