@@ -1,9 +1,8 @@
 Flask
 gunicorn
 google-cloud-storage
-flask_login
-Flask-SQLAlchemy
 pymssql
+re
 
 g2pkk
 google-api-core

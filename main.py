@@ -14,8 +14,12 @@ import base64
 
 #sql server
 import pymssql
-##from PIL.ExifTags import TAGS
-##import sys
+
+#validate login
+import re
+
+
+
 
 app = Flask(__name__)
 
