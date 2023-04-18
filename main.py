@@ -12,13 +12,6 @@ from urllib import parse
 #Encode and Decode
 import base64
 
-#Log In 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-from os import path
-from flask_login import LoginManager
-
 #sql server
 import pymssql
 ##from PIL.ExifTags import TAGS
@@ -27,7 +20,7 @@ import pymssql
 app = Flask(__name__)
 
 #Session Secret Key 
-app.secret_key = 'super secret key'
+app.secret_key = os.environ["KEY"]
 app.config['SESSION_TYPE'] = 'filesystem'
 
 #Login
