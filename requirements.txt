@@ -2,7 +2,7 @@ Flask
 gunicorn
 google-cloud-storage
 pymssql
-re
+
 
 g2pkk
 google-api-core
