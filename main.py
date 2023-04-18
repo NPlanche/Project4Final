@@ -7,7 +7,6 @@ from google.cloud import storage
 from pathlib import Path
 
 #request
-import requests
 from urllib import parse
 
 #Encode and Decode
