@@ -175,8 +175,8 @@ def index():
             #Location 
 
             location_string = string_decode(query_def_location)
-            location_string = location_string.replace('@','%40')
-            location_string = location_string.replace('@','https://storage.googleapis.com/project2database/')
+            location_string = location_string.replace('%40','@')
+            location_string = location_string.replace('https://storage.googleapis.com/project2database/','')
 
             
             #Type
