@@ -42,11 +42,23 @@ def login():
             print('Email:', email)
             print('Password:', password)
             
-            conn = pymssql.connect(server='s23.winhost.com',
-                       user='DB_127521_jkeepon_user', 
-                       password='ndp1999', 
-                       database='DB_127521_jkeepon'
-                       )  
+            
+            
+            # conn = pymssql.connect(server='s23.winhost.com',
+            #            user='DB_127521_jkeepon_user', 
+            #            password='ndp1999', 
+            #            database='DB_127521_jkeepon'
+            #            )  
+            
+            conn = pymssql.connect(server = os.environ["SEVER"],
+                       user = os.environ["USER"], 
+                       password = os.environ["PASSWORD"], 
+                       database = os.environ["DATABASE"]
+                       )              
+            
+            
+            
+            
             cursor = conn.cursor()  
             cursor.execute("SELECT * FROM Users WHERE Email='"+email+"' AND passwordHash = '" +passwordHash+"'")  
             row = cursor.fetchone()
@@ -78,6 +90,7 @@ def register():
                     password='ndp1999', 
                     database='DB_127521_jkeepon'
                     )  
+        
         cursor = conn.cursor()  
         cursor.execute("SELECT * FROM Users WHERE Email='"+email+"'")  
         row = cursor.fetchone()
