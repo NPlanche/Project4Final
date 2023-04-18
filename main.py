@@ -33,7 +33,6 @@ app.config['SESSION_TYPE'] = 'filesystem'
 
 #Login
 @app.route('/login', methods = ['GET','POST'])
-#@app.route('/', methods = ['GET','POST'])
 def login():
     if request.method == 'POST':
             email = request.form.get('email')
@@ -386,8 +385,6 @@ def delete_image(email,name):
     print("Image Deleted")
     return redirect(url_for('index'))
 
-
-
 app.config['BUCKET'] = 'project2database'
 app.config['UPLOAD_FOLDER'] = './static/image/'
 
@@ -441,10 +438,6 @@ def string_encode(query_def_size):
     base64_name = base64_name_bytes.decode("ascii")        
     print(f"Encoded: {base64_name}")
     return base64_name
-    
-
-
 
 if __name__ == "__main__":
    app.run(debug=True, host="0.0.0.0", port=(os.environ.get("PORT", 8080)))
-   
