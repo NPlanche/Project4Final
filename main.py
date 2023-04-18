@@ -288,26 +288,31 @@ def index():
 
             index_html="""<style>
             
-            form{
-                font-family: "Raleway", Arial, sans-serif
-            }
-            
-            .image{
-                margin:5px;
-                border: 1px solid #ccc;
-                width: 225px;
-                height: 225px;
-            }
-            *{
-                background-color: #90EE90;
-            }
-            .button{
-                background-color: lightgray;
-            }
-            
+                form{
+                    font-family: "Raleway", Arial, sans-serif
+                }
+                
+                .image{
+                    margin:5px;
+                    border: 1px solid #ccc;
+                    width: 225px;
+                    height: 225px;
+                }
+                *{
+                    background-color: #90EE90;
+                }
+                button{
+                    background-color: lightgray;
+                }
+                .logoutb{
+                    background-color: lightgray;
+                    text-decoration: none;
+                }
+                
             </style>
   
-            <a href="/logout">logout</a>
+            <button><a class=logoutb href="/logout">Logout</a></button>
+            <br></br>
             <form method="post" enctype="multipart/form-data" action="/upload" method="post">
                 <div>
                     <label for="file">Choose file to upload</label>
