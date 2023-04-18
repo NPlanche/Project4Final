@@ -33,6 +33,8 @@ app.config['SESSION_TYPE'] = 'filesystem'
 #Login
 @app.route('/login', methods = ['GET','POST'])
 def login():
+    error = None
+
     if request.method == 'POST':
             email = request.form.get('email')
             password = request.form.get('password')
@@ -58,7 +60,6 @@ def login():
             
             
             
-            
             cursor = conn.cursor()  
             cursor.execute("SELECT * FROM Users WHERE Email='"+email+"' AND passwordHash = '" +passwordHash+"'")  
             row = cursor.fetchone()
@@ -66,17 +67,25 @@ def login():
             while row:  
                 exist = True
                 row = cursor.fetchone()
+
             conn.close()
+            
             if exist:
                 session['email'] = email
                 print('The user in session in login:', email)
                 return redirect(url_for('index'))
+            else:
+                error = "The credentials provided are invalid or there is no account registered with this email."
+            
               
-    return render_template("login.html")
+    return render_template("login.html", error = error)
 
 #Register
 @app.route('/register', methods = ['GET','POST'])
 def register():
+    
+    error = None
+
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -107,20 +116,22 @@ def register():
         while row:  
             exist = True
             row = cursor.fetchone()
+
         if exist:
+            error = 'An account with this email address has already been registered.'
             conn.close()
-            return redirect('/register')
+            #return redirect('/register')
+        else:    
+            cursor = conn.cursor()  
+            cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('"+email+"'"+",'"+passwordHash+"')")  
+            conn.commit()         
             
-        cursor = conn.cursor()  
-        cursor.execute("INSERT Users (Email, PasswordHash) VALUES ('"+email+"'"+",'"+passwordHash+"')")  
-        conn.commit()         
-           
-        conn.close()
-        session['email'] = email
-        print('The user in session in register:', email)
-        return redirect(url_for('index'))
+            conn.close()
+            session['email'] = email
+            print('The user in session in register:', email)
+            return redirect(url_for('index'))
               
-    return render_template("signup.html")
+    return render_template("signup.html",error = error)
 
 #Logout Route
 @app.route('/logout')
@@ -290,11 +301,12 @@ def index():
             *{
                 background-color: #90EE90;
             }
-            
-            button{
+            .button{
                 background-color: lightgray;
             }
+            
             </style>
+  
             <a href="/logout">logout</a>
             <form method="post" enctype="multipart/form-data" action="/upload" method="post">
                 <div>
@@ -306,7 +318,6 @@ def index():
                 </div>
                 <hr>
                 <h1 class='title'>Gallery</h1>
-            
             
         </form>"""
         
