@@ -37,24 +37,25 @@ def login():
     if request.method == 'POST':
             email = request.form.get('email')
             password = request.form.get('password')
-            passwordHash = password # encriptar password 
+            
+            passwordHash = string_encode(password) # encriptar password 
             
             print('Email:', email)
             print('Password:', password)
             
             
             
-            # conn = pymssql.connect(server='s23.winhost.com',
-            #            user='DB_127521_jkeepon_user', 
-            #            password='ndp1999', 
-            #            database='DB_127521_jkeepon'
-            #            )  
+            conn = pymssql.connect(server='s23.winhost.com',
+                       user='DB_127521_jkeepon_user', 
+                       password='ndp1999', 
+                       database='DB_127521_jkeepon'
+                       )  
             
-            conn = pymssql.connect(server = os.environ["SEVER"],
-                       user = os.environ["USER"], 
-                       password = os.environ["PASSWORD"], 
-                       database = os.environ["DATABASE"]
-                       )              
+            # conn = pymssql.connect(server = os.environ["SEVER"],
+            #            user = os.environ["USER"], 
+            #            password = os.environ["PASSWORD"], 
+            #            database = os.environ["DATABASE"]
+            #            )              
             
             
             
@@ -80,22 +81,23 @@ def register():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        passwordHash = password # encriptar password 
+        
+        passwordHash =  string_encode(password) # encriptar password 
         
         print('Email:', email)
         print('Password:', password)
         
-        # conn = pymssql.connect(server='s23.winhost.com',
-        #             user='DB_127521_jkeepon_user', 
-        #             password='ndp1999', 
-        #             database='DB_127521_jkeepon'
-        #             )  
+        conn = pymssql.connect(server='s23.winhost.com',
+                    user='DB_127521_jkeepon_user', 
+                    password='ndp1999', 
+                    database='DB_127521_jkeepon'
+                    )  
    
-        conn = pymssql.connect(server = os.environ["SEVER"],
-                    user = os.environ["USER"], 
-                    password = os.environ["PASSWORD"], 
-                    database = os.environ["DATABASE"]
-                    )    
+        # conn = pymssql.connect(server = os.environ["SEVER"],
+        #             user = os.environ["USER"], 
+        #             password = os.environ["PASSWORD"], 
+        #             database = os.environ["DATABASE"]
+        #             )    
    
         
         cursor = conn.cursor()  
